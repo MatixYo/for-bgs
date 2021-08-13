@@ -18,7 +18,7 @@ const fetchVideo = (token: string, id: number, isLogged: boolean) => {
 }
 
 export const VideoView: React.FC = () => {
-    const { token, unsetUser } = useUser()
+    const { token, isLogged, unsetUser } = useUser()
     const { id } = useParams<{ id:string }>()
     const [video, setVideo] = useState<any>()
     const playerRef = React.useRef(null);
@@ -27,13 +27,13 @@ export const VideoView: React.FC = () => {
         if(!token) return
 
         (async () => {
-            const response = await fetchVideo(token, parseInt(id, 10), false)
+            const response = await fetchVideo(token, parseInt(id, 10), isLogged)
             if(response.ok) {
                 const video = await response.json()
                 setVideo(video)
             } else {
                 unsetUser()
-                sessionStorage.removeItem('token')
+                sessionStorage.removeItem('user')
             }
         })()
     }, [])
@@ -46,7 +46,7 @@ export const VideoView: React.FC = () => {
                         &#5176; Powrót
                     </Link>
                     <div className="relative group">
-                        <div className="absolute bg-black bg-opacity-50 text-white text-2xl w-full py-3 z-30 transition-all opacity-0 group-hover:opacity-100">{video.Title}</div>
+                        <div className="absolute bg-black bg-opacity-75 text-white text-2xl w-full py-3 z-30 transition-all opacity-0 group-hover:opacity-100">{video.Title}</div>
                         <ReactHlsPlayer
                             src={video.ContentUrl}
                             autoPlay={true}

@@ -45,13 +45,13 @@ export const ListView: React.FC = () => {
                 setItems(Entities)
             } else {
                 unsetUser()
-                sessionStorage.removeItem('token')
+                sessionStorage.removeItem('user')
             }
         })()
     }, [token, unsetUser])
 
     return (
-        <div className="py-8">
+        <div className="pt-8 pb-48">
             {items?.length > 0 && items.map(item => (
                 <Link to={`/video/${item.Id}`} key={item.Id} className="block relative w-2/4 mx-auto mt-8 cursor-pointer rounded-lg overflow-hidden transition-all transform hover:scale-105">
                     <div className="absolute bg-black bg-opacity-80 text-white text-2xl w-full py-3">{item.Title}</div>

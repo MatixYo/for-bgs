@@ -13,12 +13,14 @@ export const Main: React.FC = () => {
     const { token, setUser, unsetUser } = useUser()
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
-        if(token) setUser(token)
+        const user = sessionStorage.getItem('user')
+        if(!user) return
+        const { token, isLogged } = JSON.parse(user)
+        if(token) setUser(token, isLogged)
     }, [])
 
     const logout = () => {
-        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('user')
         unsetUser()
     }
 
@@ -28,7 +30,7 @@ export const Main: React.FC = () => {
                 <LoginView />
             ) : (
                 <>
-                    <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded" type="button" onClick={logout}>
+                    <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 my-2 rounded" type="button" onClick={logout}>
                         Wyloguj
                     </button>
                     <Router>

@@ -2,16 +2,19 @@ import React, { FC, useMemo } from 'react'
 
 interface State {
     token: string | null
+    isLogged: boolean
 }
 
 const initialState = {
-    token: null
+    token: null,
+    isLogged: false,
 }
 
 type Action =
     | {
     type: 'SET_USER'
     token: string
+    isLogged: boolean
     }
     | {
     type: 'UNSET_USER'
@@ -26,13 +29,15 @@ function userReducer(state: State, action: Action) {
         case 'SET_USER': {
             return {
                 ...state,
-                token: action.token
+                token: action.token,
+                isLogged: action.isLogged
             }
         }
         case 'UNSET_USER': {
             return {
                 ...state,
-                token: null
+                token: null,
+                isLogged: false,
             }
         }
     }
@@ -41,8 +46,8 @@ function userReducer(state: State, action: Action) {
 export const UserProvider: FC = (props) => {
     const [state, dispatch] = React.useReducer(userReducer, initialState)
 
-    const setUser = (token: string) =>
-        dispatch({ type: 'SET_USER', token })
+    const setUser = (token: string, isLogged: boolean) =>
+        dispatch({ type: 'SET_USER', token, isLogged })
 
     const unsetUser = () =>
         dispatch({ type: 'UNSET_USER' })

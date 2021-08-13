@@ -7,7 +7,7 @@ interface Credentials {
 }
 
 export const LoginView: React.FC = () => {
-    const { setUser, token } = useUser()
+    const { setUser } = useUser()
 
     const login = async (user?: Credentials) => {
         const response = await fetch('https://thebetter.bsgroup.eu/Authorization/SignIn', {
@@ -18,11 +18,15 @@ export const LoginView: React.FC = () => {
             body: JSON.stringify(user ? user : {})
         }).then(r => r.json())
 
+        const isLogged = response.User?.Id !== -999
         const token = response.AuthorizationToken?.Token
 
         if(token) {
-            sessionStorage.setItem('token', token);
-            setUser(token);
+            sessionStorage.setItem('user', JSON.stringify({
+                token,
+                isLogged
+            }))
+            setUser(token, isLogged);
         } else console.log('blad')
     }
 
