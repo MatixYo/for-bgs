@@ -23,8 +23,7 @@ export const LoginView: React.FC = () => {
         if(token) {
             sessionStorage.setItem('token', token);
             setUser(token);
-        }
-        else console.log('blad')
+        } else console.log('blad')
     }
 
     const onSubmit = (e: React.FormEvent) => {

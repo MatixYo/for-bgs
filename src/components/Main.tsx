@@ -7,15 +7,15 @@ import {
     Route
 } from "react-router-dom";
 import {ListView} from "./ListView";
+import {VideoView} from "./VideoView";
 
 export const Main: React.FC = () => {
     const { token, setUser } = useUser()
 
     useEffect(() => {
         const token = sessionStorage.getItem('token')
-        setUser(token)
+        if(token) setUser(token)
     }, [])
-
 
     return (
         <>
@@ -27,8 +27,8 @@ export const Main: React.FC = () => {
                         <Route exact path="/">
                             <ListView />
                         </Route>
-                        <Route path="/">
-                            Głowna
+                        <Route path="/video/:id">
+                            <VideoView />
                         </Route>
                     </Switch>
                 </Router>

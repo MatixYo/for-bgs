@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import { LoginView } from "components/LoginView";
 import {ManagedUserContext} from "./user-context";
 import {Main} from "./components/Main";
 

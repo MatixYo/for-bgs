@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import {Link} from 'react-router-dom'
 import {useUser} from "../user-context";
 
 interface Image {
@@ -8,44 +9,57 @@ interface Image {
 
 interface Entity {
     Id: string,
-    title: string,
+    Title: string,
     Images: Image[],
 }
 
+const fetchEntities = (token: string, listId: number = 2, pageNumber: number = 1, pageSize: number = 15) => {
+    return fetch('https://thebetter.bsgroup.eu/Media/GetMediaList', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            "MediaListId": 2,
+            "IncludeCategories": false,
+            "IncludeImages": true,
+            "IncludeMedia": false,
+            "PageNumber": 1,
+            "PageSize": 15
+        })
+    });
+}
+
 export const ListView: React.FC = () => {
-    const { token } = useUser()
+    const { token, unsetUser } = useUser()
     const [items, setItems] = useState<Entity[]>([])
 
     useEffect(() => {
         if(!token) return
 
-        fetch('https://thebetter.bsgroup.eu/Media/GetMediaList', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                "MediaListId": 2,
-                "IncludeCategories": false,
-                "IncludeImages": true,
-                "IncludeMedia": false,
-                "PageNumber": 1,
-                "PageSize": 15
-            })
-        }).then(r => r.json()).then(response => {
-            const { Entities } = response
-            setItems(Entities)
-        })
-    }, [token])
+        (async () => {
+            const response = await fetchEntities(token)
+            if(response.ok) {
+                const { Entities } = await response.json()
+                setItems(Entities)
+            } else {
+                unsetUser()
+                sessionStorage.removeItem('token')
+            }
+        })()
+    }, [token, unsetUser])
 
     return (
-        <div>
-            {items.map(item => (
-                <div key={item.Id}>
-                    <span>{item.title}</span>
-                    <img src={item.Images && (item!.Images!.find(i => i!.ImageTypeCode === 'FRAME')).Url} />
-                </div>
+        <div className="py-8">
+            {items?.length > 0 && items.map(item => (
+                <Link to={`/video/${item.Id}`} key={item.Id} className="block relative w-2/4 mx-auto mt-8 cursor-pointer rounded-lg overflow-hidden transition-all transform hover:scale-105">
+                    <div className="absolute bg-black bg-opacity-80 text-white text-2xl w-full py-3">{item.Title}</div>
+                    <img
+                        src={(item?.Images?.find(i => i!.ImageTypeCode === 'FRAME'))?.Url}
+                        className="w-full"
+                    />
+                </Link>
             ))}
         </div>
     )
