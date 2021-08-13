@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
-import {useParams} from "react-router-dom";
+import {useParams, Link} from "react-router-dom";
 import {useUser} from "../user-context";
+import ReactHlsPlayer from 'react-hls-player'
 
 const fetchVideo = (token: string, id: number, isLogged: boolean) => {
     return fetch('https://thebetter.bsgroup.eu/Media/GetMediaPlayInfo', {
@@ -19,7 +20,8 @@ const fetchVideo = (token: string, id: number, isLogged: boolean) => {
 export const VideoView: React.FC = () => {
     const { token, unsetUser } = useUser()
     const { id } = useParams<{ id:string }>()
-    const [videoUrl, setVideoUrl] = useState<string>()
+    const [video, setVideo] = useState<any>()
+    const playerRef = React.useRef(null);
 
     useEffect(() => {
         if(!token) return
@@ -27,8 +29,8 @@ export const VideoView: React.FC = () => {
         (async () => {
             const response = await fetchVideo(token, parseInt(id, 10), false)
             if(response.ok) {
-                const { Url } = await response.json()
-                setVideoUrl(Url)
+                const video = await response.json()
+                setVideo(video)
             } else {
                 unsetUser()
                 sessionStorage.removeItem('token')
@@ -37,8 +39,25 @@ export const VideoView: React.FC = () => {
     }, [])
 
     return (
-        <div>
-            <video src={videoUrl} />
+        <div className="min-h-screen flex justify-center items-center">
+            {video && (
+                <div className="mx-auto w-4/6">
+                    <Link to="/" className="inline-block mb-4 mr-auto bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">
+                        &#5176; Powrót
+                    </Link>
+                    <div className="relative group">
+                        <div className="absolute bg-black bg-opacity-50 text-white text-2xl w-full py-3 z-30 transition-all opacity-0 group-hover:opacity-100">{video.Title}</div>
+                        <ReactHlsPlayer
+                            src={video.ContentUrl}
+                            autoPlay={true}
+                            controls={true}
+                            width="100%"
+                            height="auto"
+                            playerRef={playerRef}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

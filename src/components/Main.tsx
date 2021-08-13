@@ -10,28 +10,38 @@ import {ListView} from "./ListView";
 import {VideoView} from "./VideoView";
 
 export const Main: React.FC = () => {
-    const { token, setUser } = useUser()
+    const { token, setUser, unsetUser } = useUser()
 
     useEffect(() => {
         const token = sessionStorage.getItem('token')
         if(token) setUser(token)
     }, [])
 
+    const logout = () => {
+        sessionStorage.removeItem('token')
+        unsetUser()
+    }
+
     return (
         <>
             {!token ? (
                 <LoginView />
             ) : (
-                <Router>
-                    <Switch>
-                        <Route exact path="/">
-                            <ListView />
-                        </Route>
-                        <Route path="/video/:id">
-                            <VideoView />
-                        </Route>
-                    </Switch>
-                </Router>
+                <>
+                    <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded" type="button" onClick={logout}>
+                        Wyloguj
+                    </button>
+                    <Router>
+                        <Switch>
+                            <Route exact path="/">
+                                <ListView />
+                            </Route>
+                            <Route path="/video/:id">
+                                <VideoView />
+                            </Route>
+                        </Switch>
+                    </Router>
+                </>
             )}
         </>
     );
